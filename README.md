@@ -132,6 +132,6 @@ sudo xattr -cr /Applications/LyricsBlossom.app
 
 **LyricsBlossom is proprietary software. All rights reserved.**
 
-本项目为闭源软件，仅供个人使用。未经许可，禁止复制、修改、分发或逆向工程。
+本项目为闭源软件，仅供个人使用。未经许可，禁止复制、修改、分发或倒卖。
 
 See [LICENSE](LICENSE) for details.
