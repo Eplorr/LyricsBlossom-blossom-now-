@@ -40,6 +40,7 @@
 ### 字体
 
 下载并安装全套 SF Pro, PingFang SC, PingFang TC
+
 mac 用户 SF Pro [下载](https://developer.apple.com/fonts/) 
 
 ### 歌词获取
