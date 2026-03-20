@@ -22,7 +22,6 @@
 ## Download / 下载
 
 前往 **[Releases](https://github.com/Eplorr/LyricsBlossom/releases/latest)** 下载最新版本。
-目前 macOS 只编译了 Apple Silicon 的版本，Intel 架构后续会补充
 
 ---
 
@@ -30,8 +29,8 @@
 
 | | macOS | Windows |
 |:---|:---|:---|
-| **系统版本** | macOS 13+ | Windows 10 1809+ |
-| **GPU** | Metal 或 OpenGL 3.3 （下载自行选择） | Vulkan 或 OpenGL（自动回退） |
+| **系统版本** | macOS 13+ （如果需要动态律动背景需要 14+） | Windows 10 1809+ |
+| **GPU** | Metal 或 OpenGL （设置中选择） | Vulkan 或 OpenGL（自动回退） |
 | **其他** | — | 网易云用户需安装 [BetterNCM](https://github.com/MicroCBer/BetterNCM) + InfLink-rs 插件 |
 
 ---
