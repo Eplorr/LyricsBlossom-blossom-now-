@@ -90,7 +90,9 @@ sudo xattr -cr /Applications/LyricsBlossom.app
 <img src="screenshot-2.png" width="100%" />
 <img src="screenshot-3.png" width="100%" />
 <img src="screenshot-5.png" width="100%" />
-<img src="screenshot-4.png" width="45%" />
+<img src="screenshot-4.png" width="45%" /><img src="screenshot-6.png" width="45%" />
+<img src="screenshot-7.png" width="45%" /><img src="screenshot-8.png" width="45%" />
+<img src="screenshot-9.png" width="45%" />
 </div>
 
 ## FAQ / 常见问题
