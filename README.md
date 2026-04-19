@@ -2,7 +2,7 @@
 
 # 🌸 LyricsBlossom
 
-**为 歌词 而生**
+**为歌词而生**
 
 [![GitHub Release](https://img.shields.io/github/v/release/Eplorr/LyricsBlossom-blossom-now-?style=flat-square)](https://github.com/Eplorr/LyricsBlossom/releases/latest)
 [![License](https://img.shields.io/badge/license-Proprietary-red?style=flat-square)](#license)
