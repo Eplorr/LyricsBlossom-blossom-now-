@@ -1,0 +1,97 @@
+name: Sign Release Assets
+
+on:
+  release:
+    types: [published, released]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to sign (e.g. Release-Candidate-5.6)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve target release tag
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify OpenSSL supports -rawin
+        run: |
+          openssl version
+          openssl pkeyutl -help 2>&1 | grep -q -- '-rawin' \
+            || { echo "OpenSSL too old; need >=3.0"; exit 1; }
+
+      - name: Stage signing key
+        env:
+          PRIV_KEY: ${{ secrets.UPDATER_PRIVATE_KEY }}
+        run: |
+          if [ -z "$PRIV_KEY" ]; then
+            echo "::error::Repository secret UPDATER_PRIVATE_KEY is not set"
+            exit 1
+          fi
+          mkdir -p "${RUNNER_TEMP}/keys"
+          printf '%s' "$PRIV_KEY" > "${RUNNER_TEMP}/keys/priv.pem"
+          chmod 600 "${RUNNER_TEMP}/keys/priv.pem"
+          openssl pkey -in "${RUNNER_TEMP}/keys/priv.pem" -text -noout \
+            | grep -q 'ED25519' \
+            || { echo "::error::Stored key is not Ed25519"; exit 1; }
+
+      - name: Download release .zip assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.target.outputs.tag }}
+        run: |
+          mkdir -p "${RUNNER_TEMP}/release"
+          cd "${RUNNER_TEMP}/release"
+          gh release download "$TAG" \
+            --repo "${{ github.repository }}" \
+            --pattern '*.zip'
+          ls -lh
+
+      - name: Sign each zip with Ed25519
+        run: |
+          cd "${RUNNER_TEMP}/release"
+          shopt -s nullglob
+          zips=( *.zip )
+          if [ "${#zips[@]}" -eq 0 ]; then
+            echo "::error::no .zip assets found on this release"
+            exit 1
+          fi
+          for zip in "${zips[@]}"; do
+            echo "Signing $zip"
+            openssl pkeyutl -sign \
+              -inkey "${RUNNER_TEMP}/keys/priv.pem" \
+              -rawin -in "$zip" \
+              -out "${zip}.sig"
+            sigSize=$(wc -c < "${zip}.sig")
+            if [ "$sigSize" != "64" ]; then
+              echo "::error::signature for $zip is ${sigSize} bytes, expected 64"
+              exit 1
+            fi
+            echo "  -> ${zip}.sig ✓"
+          done
+
+      - name: Upload .sig assets to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.target.outputs.tag }}
+        run: |
+          cd "${RUNNER_TEMP}/release"
+          gh release upload "$TAG" \
+            --repo "${{ github.repository }}" \
+            --clobber \
+            *.sig
+
+      - name: Wipe key
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/keys/priv.pem"
